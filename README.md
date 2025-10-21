@@ -6,6 +6,18 @@ For this project, team 2 gained familiarity with distributed messaging concepts,
 
 Faculty and staff use the system to place an order, get a Purchase Order ID (POID), and track status with the option to cancel until it ships. A clean catalog of school supplies keeps items and prices valid. Behind the scenes, Google Pub/Sub moves each order with acknowledgments, automatic retries, and a dead-letter safety net, so delivery is guaranteed and there are no lost orders. The three main services are Inventory checks and reserves stock, Payment charges the order exactly once, and Shipping packs and sends U.S. deliveries with tracking. We also watch for duplicates by POID, so repeat messages don’t cause extra charges or shipments. Requesters get email confirmations and updates, admins can step in to manage settings and fix issues, and everything is logged and monitored for at least 30 days to keep the system reliable and transparent.
 
+
+
+ 
+
+How it works 
+
+- Publisher sends a JSON message with a unique `message_id`. 
+- Subscriber pulls messages, saves them to the DB, and marks duplicates. 
+- UI (Flask) shows all messages with sorting, filtering, and a duplicate badge.
+
+
+
 Tech stack: Pub/Sub, Python, Flask, SQLite (or Cloud SQL), VS Code, GitHub
 
 
