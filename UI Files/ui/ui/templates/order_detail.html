@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Order {{ order['order_id'] }}</title></head>
+<body>
+  <a href="/orders">← Back</a>
+  <h1>Order {{ order['order_id'] }}</h1>
+  <p><strong>Requester:</strong> {{ order['requested_by_name'] }} ({{ order['requested_by_email'] }})</p>
+  <p><strong>School:</strong> {{ order['school'] }} / <strong>Department:</strong> {{ order['department'] }}</p>
+  <p><strong>Status:</strong> {{ order['status'] }}</p>
+  <p><strong>Notes:</strong> {{ order['notes'] }}</p>
+
+  <h2>Items</h2>
+  <table><thead><tr><th>SKU</th><th>Name</th><th>Qty</th><th>Unit</th><th>Unit Price</th><th>Total</th></tr></thead>
+    <tbody>
+      {% for it in items %}
+      <tr><td>{{ it['sku'] }}</td><td>{{ it['name'] }}</td><td>{{ it['qty'] }}</td><td>{{ it['unit'] }}</td><td>{{ it['unit_price'] }}</td><td>{{ it['total'] }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h2>Event History</h2>
+  <table><thead><tr><th>When</th><th>Type</th><th>Event ID</th><th>Duplicate</th></tr></thead>
+    <tbody>
+      {% for e in events %}
+      <tr class="{{ 'dup' if e['is_duplicate'] else '' }}"><td>{{ e['received_at'] }}</td><td>{{ e['event_type'] }}</td><td>{{ e['event_id'] }}</td><td>{{ 'Yes' if e['is_duplicate'] else 'No' }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+</body>
+</html>
