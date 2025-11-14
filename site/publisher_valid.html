@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Publisher – Valid Order</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <header><h1>Publisher – Valid Order</h1></header>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="publisher_duplicate.html">Duplicate</a>
+    <a href="publisher_invalid.html">Invalid</a>
+    <a href="help.html">Help</a>
+  </nav>
+
+  <p class="small">Fill the form → Generate JSON → Copy JSON → paste into Pub/Sub → Publish.</p>
+
+  <section class="card">
+    <h2>Order Header</h2>
+    <div class="grid2">
+      <label>Order ID (optional)
+        <input id="orderId" placeholder="ORD-2025-000123">
+      </label>
+      <label>Status
+        <select id="status">
+          <option>NEW</option><option>APPROVED</option>
+          <option>BACKORDER</option><option>FULFILLED</option><option>CANCELLED</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="grid2">
+      <label>Teacher Name
+        <input id="teacherName" placeholder="Ms. Johnson">
+      </label>
+      <label>Teacher Email
+        <input id="teacherEmail" placeholder="mjohnson@school.edu">
+      </label>
+    </div>
+
+    <div class="grid2">
+      <label>School
+        <input id="school" placeholder="KSU Elementary Lab">
+      </label>
+      <label>Department/Grade
+        <input id="department" placeholder="3rd Grade">
+      </label>
+    </div>
+
+    <label>Notes (optional)
+      <input id="notes" placeholder="Need before Nov 10.">
+    </label>
+  </section>
+
+  <section class="card">
+    <h2>Items</h2>
+    <div class="grid2">
+      <label>SKU <input id="sku"></label>
+      <label>Name <input id="name"></label>
+    </div>
+    <div class="grid2">
+      <label>Quantity <input id="qty" type="number" value="1" min="1"></label>
+      <label>Unit <input id="unit" placeholder="each / box / pack"></label>
+    </div>
+    <label>Unit Price <input id="unitPrice" type="number" step="0.01" value="1.00"></label>
+    <button onclick="addItem()">Add Item</button>
+
+    <table id="itemsTable" style="display:none;">
+      <thead><tr><th>SKU</th><th>Name</th><th>Qty</th><th>Unit</th><th>Unit Price</th><th></th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <div class="grid2">
+    <button onclick="generate()">Generate JSON</button>
+    <button onclick="copyJson()">Copy JSON</button>
+  </div>
+
+  <label class="small">Generated JSON</label>
+  <textarea id="output" rows="16" spellcheck="false"></textarea>
+
+  <script>
+    const items = [];
+    function uuidv4(){return'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0,v=c==='x'?r:(r&0x3|0x8);return v.toString(16);});}
+    function nowIso(){ return new Date().toISOString(); }
+
+    function addItem(){
+      const sku = skuEl().value.trim();
+      const name = nameEl().value.trim();
+      const qty = parseInt(document.getElementById('qty').value,10);
+      const unit = document.getElementById('unit').value.trim();
+      const unitPrice = parseFloat(document.getElementById('unitPrice').value);
+      if(!sku || !name || !qty || !unit || isNaN(unitPrice)){ alert('Please fill SKU, Name, Qty, Unit, Unit Price.'); return; }
+      items.push({ sku, name, qty, unit, unit_price: unitPrice });
+      renderItems();
+      skuEl().value=''; nameEl().value=''; document.getElementById('qty').value='1';
+      document.getElementById('unit').value=''; document.getElementById('unitPrice').value='1.00';
+    }
+    function removeItem(i){ items.splice(i,1); renderItems(); }
+    function renderItems(){
+      const tbl = document.getElementById('itemsTable');
+      const body = tbl.querySelector('tbody');
+      body.innerHTML = '';
+      items.forEach((it,i)=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML = `
+          <td>${it.sku}</td><td>${it.name}</td><td>${it.qty}</td>
+          <td>${it.unit}</td><td>${it.unit_price.toFixed(2)}</td>
+          <td><button onclick="removeItem(${i})">Remove</button></td>`;
+        body.appendChild(tr);
+      });
+      tbl.style.display = items.length ? 'table' : 'none';
+    }
+    function skuEl(){return document.getElementById('sku')}
+    function nameEl(){return document.getElementById('name')}
+    function generate(){
+      if(!items.length){ alert('Add at least one item.'); return; }
+      const payload = {
+        event_id: uuidv4(),
+        event_type: "OrderCreated",
+        order_id: document.getElementById('orderId').value.trim() || `ORD-${new Date().getFullYear()}-${Math.floor(Math.random()*1e6).toString().padStart(6,'0')}`,
+        created_at: nowIso(),
+        requested_by: {
+          name: document.getElementById('teacherName').value.trim() || "Teacher",
+          email: document.getElementById('teacherEmail').value.trim() || "teacher@school.edu"
+        },
+        school: document.getElementById('school').value.trim() || "Your School",
+        department: document.getElementById('department').value.trim() || "Department",
+        items: items.slice(),
+        notes: document.getElementById('notes').value,
+        status: document.getElementById('status').value || "NEW"
+      };
+      document.getElementById('output').value = JSON.stringify(payload, null, 2);
+    }
+    function copyJson(){
+      const t=document.getElementById('output').value;
+      if(!t){ alert('Generate JSON first.'); return; }
+      navigator.clipboard.writeText(t).then(()=>alert('JSON copied. Paste in Pub/Sub → Publish message.'));
+    }
+  </script>
+</body>
+</html>
