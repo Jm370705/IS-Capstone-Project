@@ -69,8 +69,8 @@
 
         <p><strong>Order ID:</strong> {{ order.order_id }}</p>
         <p><strong>Teacher/Faculty:</strong> {{ order.teacher_name }}</p>
-        <P><strong>Status:</strong> {{ order.status }}</P>
-        <p><strong>Created At:</strong> {{ order.created_at.strftime('%Y-%m-%d %H:%M:%S') if order.created_at else '' }}</p>
+        <p><strong>Status:</strong> {{ order.status }}</p>
+        <p><strong>Created At:</strong> {{ order.created_at.strftime('%Y-%m-%d %H:%M:%S') if order.created_at else 'N/A' }}</p>
 
         <h2>Items Ordered</h2>
         <table>
@@ -127,5 +127,6 @@
     </div>
 </body>
 </html>
+
 
 
