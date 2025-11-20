@@ -64,7 +64,7 @@
 <body>
 
     <div class="container">
-        <a class="back-link" href="../templates/orders.html">&larr; Back To Orders</a>
+        <a class="back-link" href="{{ url_for('orders') }}"> Back To Orders</a>
         <h1>Order Details</h1>
 
         <p><strong>Order ID:</strong> {{ order.order_id }}</p>
@@ -127,6 +127,7 @@
     </div>
 </body>
 </html>
+
 
 
 
