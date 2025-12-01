@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>School Supply Publisher – Home</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <header><h1>School Supply Publisher</h1></header>
+  <nav>
+    <a href="publisher_valid.html">Valid Order</a>
+    <a href="publisher_duplicate.html">Duplicate Message</a>
+    <a href="publisher_invalid.html">Invalid Payloads</a>
+    <a href="help.html">Help</a>
+  </nav>
+
+  <section class="card">
+    <h2>How to Use</h2>
+    <ol>
+      <li>Open one of the pages (Valid / Duplicate / Invalid).</li>
+      <li>Click <b>Generate JSON</b> → <b>Copy JSON</b>.</li>
+      <li>In Google Cloud Console, go to <b>Pub/Sub → Topics → your topic → Publish message</b>.</li>
+      <li>Paste the JSON into the message body, then click <b>Publish</b>.</li>
+    </ol>
+  </section>
+
+  <section class="card">
+    <h2>What You’ll Test</h2>
+    <ul>
+      <li>Valid orders get saved and shown by your subscriber/UI.</li>
+      <li>Duplicate messages (same <code>event_id</code>) are detected.</li>
+      <li>Invalid payloads are rejected (no bad rows in DB).</li>
+    </ul>
+  </section>
+</body>
+</html>
